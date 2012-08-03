@@ -112,8 +112,20 @@ class JomDescriptor(object):
     """
     template = "jom/JomClass.js"
     
+    """ The model form which will be used to create a new instance
+        through the async create view.
+        
+        If None a ModelForm with all the non-readonly fields
+        will be automatically created.
+    """
     create_form = None
     
+    """ The model form which will be used to save a new instance
+        through the async create view.
+        
+        If None a ModelForm with all the non-readonly fields
+        will be automatically created.
+    """
     update_form = None
     
     def canGet(self, request):
