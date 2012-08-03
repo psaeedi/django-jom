@@ -4,11 +4,14 @@ Created on Jul 19, 2012
 @author: Michele Sama (m.sama@puzzledev.com)
 '''
 import datetime
+from types import NoneType
+
 from django.template.defaultfilters import safe
 from django.db.models.base import Model
-from jom import factory as jom_factory
 from django.template.loader import render_to_string
-from types import NoneType
+
+from jom import factory as jom_factory
+
 
 class JomField(object):
     """ Define the base class for a field.
@@ -137,7 +140,7 @@ class UrlJomField(JomField):
     """
     def __init__(self, instance, name, readonly = False,
                  factory = jom_factory.JomFactory.default()):
-        # TODO(msama): typechecking
+        # TODO(msama): type checking
         super(UrlJomField, self).__init__(instance, name, readonly, factory)
         
     def getValue(self):
@@ -193,7 +196,6 @@ class ForeignKeyJomField(JomField):
         if self.related == None:
             raise AssertionError(
                 "name should be a related field")
-                
         super(ForeignKeyJomField, self).__init__(instance, name, readonly, factory)
     
     def getValue(self):
@@ -218,7 +220,8 @@ class ForeignKeyJomField(JomField):
             setattr(self.instance, self.name, jomInstance.instance)
         else:
             raise AttributeError(
-                    "%s (%s), should be a instance of Model or a dict." % (value, type(value)))
+                    "%s (%s), should be a instance of Model or a dict."
+                    % (value, type(value)))
             
     value = property(getValue, setValue)
     
