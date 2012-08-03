@@ -10,12 +10,11 @@ from django.db.models.fields import CharField, IntegerField, FloatField,\
     TextField, DateField
 from django.db.models.fields.files import FileField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.db.models.base import Model
+from django.forms.models import ModelFormMetaclass, ModelForm
 from django.template.base import Template
 from django.template.context import Context
 from django.template.loader import render_to_string
-from django.db.models.base import Model
-from django.forms.models import ModelFormMetaclass, ModelForm
-
 
 class JomFactory(object):
     """ Stores all the JomEntry

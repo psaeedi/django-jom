@@ -4,11 +4,12 @@ Created on Jul 24, 2012
 
 @author: Michele Sama (m.sama@puzzledev.com)
 '''
-import json
-from django.http import HttpResponse
 import datetime
+import json
 import traceback
 import sys
+
+from django.http import HttpResponse
 
 
 def parseDateTime(date_string):
@@ -26,17 +27,21 @@ MESSAGE = "message"
 def json_message(dictionary):
     return json.dumps(dictionary)
 
+
 def json_response(result, dictionary = {}, message = None):
     dictionary[RESULT] = result
     if message:
         dictionary[MESSAGE] = message
     return json_message(dictionary)
 
+
 def json_true(dictionary = {}, message = None):
     return json_response(True, dictionary, message)
 
+
 def json_false(dictionary = {}, message = None):
     return json_response(False, dictionary, message)
+
 
 class AjaxResponse(object):
     """ Creates an ajax response
@@ -58,5 +63,4 @@ class AjaxResponse(object):
                 return HttpResponse(json_false(message = "%s" % err),
                         content_type = "application/json") 
         return _decorated_fz
-    
     
