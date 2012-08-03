@@ -74,9 +74,10 @@
  * Save the instance and all the loaded FK on the server.
  * 
  * @callback successCallback()
- * @callback errorCallback(message)
+ * @callback errorCallback(jsonResponse)
  */
 {{ clazz }}.prototype.asyncUpdate = function(successCallback, errorCallback) {
+	var self = this;
 	$.ajax({
     	url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
     	data: this.toMap(),
@@ -85,9 +86,12 @@
     	traditional: true,
     	success: function(jsonResponse) { 
     		if (jsonResponse.result == true) {
+    			// Update the current instance
+    			// with the returned values.
+    			self.init(jsonResponse)
     			successCallback();
     		} else {
-    			errorCallback(jsonResponse.message);
+    			errorCallback(jsonResponse);
     		}
     	},
     	error: function() { 
@@ -115,7 +119,7 @@
     	traditional: true,
     	success: function(jsonResponse) { 
     		if (jsonResponse.result == true) {
-    			successCallback()
+    			successCallback();
     		} else {
     			errorCallback(jsonResponse.message)
     		}
@@ -214,7 +218,7 @@
     			var jomInstace = new {{ clazz }}(jsonResponse.config);
     			successCallback(jomInstace);
     		} else {
-    			errorCallback(jsonResponse.message);
+    			errorCallback(jsonResponse);
     		}
     	},
     	error: function() { 
