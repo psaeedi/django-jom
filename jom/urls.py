@@ -5,9 +5,12 @@ Created on Jul 24, 2012
 '''
 from django.conf.urls import patterns, url
 from jom.views import jom_async_update_ajax, jom_async_create_ajax,\
-    jom_async_delete_ajax
+    jom_async_delete_ajax, jom_async_get_ajax
 
 urlpatterns = patterns('',
+        url(r'^get/$',
+            jom_async_get_ajax, 
+            name = "jom_async_get_ajax"),
         url(r'^update/$',
             jom_async_update_ajax, 
             name = "jom_async_update_ajax"),

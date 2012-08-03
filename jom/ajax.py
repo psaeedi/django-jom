@@ -10,7 +10,6 @@ import datetime
 import traceback
 import sys
 
-    
 
 def parseDateTime(date_string):
     try:
@@ -22,6 +21,7 @@ def parseDateTime(date_string):
 #----------------
 RESULT = "result"
 MESSAGE = "message"
+
 
 def json_message(dictionary):
     return json.dumps(dictionary)
@@ -49,12 +49,12 @@ class AjaxResponse(object):
                         content_type = "application/json") 
             
             try:
-                dictionary = original_fz(request, *args, **kwargs)
-                return HttpResponse(json_true(dictionary = dictionary),
+                result, dictionary, message = original_fz(request, *args, **kwargs)
+                return HttpResponse(json_response(result, dictionary, message),
                         content_type = "application/json") 
             except Exception, err:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                traceback.print_tb(exc_traceback, limit=10, file=sys.stdout)
+                traceback.print_tb(exc_traceback, limit = 10, file = sys.stdout)
                 return HttpResponse(json_false(message = "%s" % err),
                         content_type = "application/json") 
         return _decorated_fz

@@ -14,6 +14,7 @@ from django.template.base import Template
 from django.template.context import Context
 from django.template.loader import render_to_string
 from django.db.models.base import Model
+from django.forms.models import ModelFormMetaclass, ModelForm
 
 
 class JomFactory(object):
@@ -111,6 +112,10 @@ class JomDescriptor(object):
     """
     template = "jom/JomClass.js"
     
+    create_form = None
+    
+    update_form = None
+    
     def canGet(self, request):
         """ State if the given request has permission to
             get the instance.
@@ -147,6 +152,20 @@ class JomDescriptor(object):
         """
         return False
     
+    
+    def __get_form_class(self, include_fields):
+        # The inner Meta class fails if model = model is used for some reason.
+        tmp_model = self.model
+        # TODO: we should be able to construct a ModelForm without creating
+        # and passing in a temporary inner class.
+        class Meta:
+            model = tmp_model
+            fields = include_fields
+            
+        class_name = tmp_model.__name__ + 'Form'
+        form_class = ModelFormMetaclass(class_name, (ModelForm,), {'Meta': Meta})
+        return form_class
+    
     def __init__(self):
         if self.model == None:
             # model cannot be null
@@ -180,6 +199,17 @@ class JomDescriptor(object):
             model_fields = [x
                     for x in model_fields
                     if x.name not in self.exclude]
+        
+        editable_fields = [x.name for x in model_fields if x.name not in self.readonly]
+        if not self.create_form:
+            self.create_form = self.__get_form_class(editable_fields)
+        elif not isinstance(self.create_form, ModelForm):
+            raise ValueError("%s is not a ModelForm" % self.create_form)
+            
+        if not self.update_form:
+            self.update_form = self.__get_form_class(editable_fields)
+        elif not isinstance(self.update_form, ModelForm):
+            raise ValueError("%s is not a ModelForm" % self.update_form)
         
         # Init jom_fields
         from jom import fields as jomFields
