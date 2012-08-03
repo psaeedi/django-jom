@@ -214,12 +214,12 @@ class JomDescriptor(object):
         editable_fields = [x.name for x in model_fields if x.name not in self.readonly]
         if not self.create_form:
             self.create_form = self.__get_form_class(editable_fields)
-        elif not isinstance(self.create_form, ModelForm):
+        elif not issubclass(self.create_form, ModelForm):
             raise ValueError("%s is not a ModelForm" % self.create_form)
             
         if not self.update_form:
             self.update_form = self.__get_form_class(editable_fields)
-        elif not isinstance(self.update_form, ModelForm):
+        elif not issubclass(self.update_form, ModelForm):
             raise ValueError("%s is not a ModelForm" % self.update_form)
         
         # Init jom_fields
