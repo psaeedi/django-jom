@@ -120,11 +120,11 @@ class JavascriptJomField(JomField):
         super(JavascriptJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        if self.value:
-            return self.value
+        if self.getValue():
+            return self.getValue()
         else:
             return "{}"
     
