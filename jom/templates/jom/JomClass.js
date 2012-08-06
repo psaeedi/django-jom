@@ -111,12 +111,12 @@
     	dataType: 'json',
     	type: 'POST',
     	traditional: true,
-    	success: function(jsonResponse) { 
+    	success: function(jsonResponse, statusText, xhr, $form) { 
     		if (jsonResponse.result == true) {
     			// Update the current instance
     			// with the returned values.
     			self.init(jsonResponse)
-    			successCallback();
+    			successCallback(jsonResponse);
     		} else {
     			errorCallback(jsonResponse);
     		}
@@ -245,7 +245,7 @@
     	dataType: 'json',
     	type: 'POST',
     	traditional: true,
-    	success: function(jsonResponse) { 
+    	success: function(jsonResponse, statusText, xhr, $form) { 
     		if (jsonResponse.result == true) {
     			var jomInstace = new {{ clazz }}(jsonResponse.config);
     			successCallback(jomInstace);
