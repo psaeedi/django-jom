@@ -16,7 +16,6 @@ from jomtest.foo.joms import SimpleModelJomDescriptor,\
     ModelWithAllFieldsJomDescriptor
 
 
-
 class ExportTestCase(TestCase):
     
     def setUp(self):
@@ -104,25 +103,68 @@ class JomDescriptorTestCase(TestCase):
 class BackEndTestCase(TestCase):
     
     def setUp(self):
-        self.factory = JomFactory.default()
-        self.descriptor = self.factory.register(
-                SimpleModelJomDescriptor)
-        
+        JomFactory.autodiscover() 
+            
     def tearDown(self):
-        TestCase.tearDown(self)
+        pass
     
     def testUpdate(self):
         instance = SimpleModel.objects.create(name = "foo")
-        print instance.__class__.__name__
         response = self.client.post(
                 reverse("jom_async_update_ajax"),
-                data = {'model': instance.__class__.__name__,
-                 'id': instance.id,
-                 'name': "bar"}, 
-                content_type = "application/json"
+                {
+                    'model': instance.__class__.__name__,
+                    'id': instance.id,
+                    'name': "bar"
+                }, 
+                #content_type = "application/json"
                 )
         
-        print(response.content)
         instance = SimpleModel.objects.get(id = instance.id)
         self.assertEqual("bar", instance.name)
         instance.delete()
+        
+    def testCreate(self):
+        response = self.client.post(
+                reverse("jom_async_create_ajax"),
+                {
+                    'model': SimpleModel.__name__,
+                    'name': "bar"
+                }, 
+                #content_type = "application/json"
+                )
+        
+        instances = SimpleModel.objects.all()
+        self.assertEqual(instances.count(), 1)
+        instance = instances[0]
+        self.assertEqual("bar", instance.name)
+        instance.delete()
+    
+    def testGet(self):
+        instance = SimpleModel.objects.create(name = "foo")
+        response = self.client.post(
+                reverse("jom_async_get_ajax"),
+                {
+                    'model': instance.__class__.__name__,
+                    'id': instance.id,
+                }, 
+                #content_type = "application/json"
+                )
+        
+        instance = SimpleModel.objects.get(id = instance.id)
+        self.assertEqual("foo", instance.name)
+        instance.delete()
+    
+    def testDelete(self):
+        instance = SimpleModel.objects.create(name = "foo")
+        response = self.client.post(
+                reverse("jom_async_delete_ajax"),
+                {
+                    'model': instance.__class__.__name__,
+                    'id': instance.id
+                }, 
+                #content_type = "application/json"
+                )
+        
+        instances = SimpleModel.objects.all()
+        self.assertEqual(instances.count(), 0)

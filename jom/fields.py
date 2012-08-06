@@ -7,7 +7,6 @@ import datetime
 from types import NoneType
 
 from django.template.defaultfilters import safe
-from django.db.models.base import Model
 from django.template.loader import render_to_string
 
 from jom import factory as jom_factory
@@ -26,11 +25,6 @@ class JomField(object):
 
     def getValue(self):
         return getattr(self.instance, self.name)
-    
-    def setValue(self, value):
-        setattr(self.instance, self.name, value)
-        
-    value = property(getValue, setValue)
 
     def toString(self):
         raise AssertionError(
@@ -152,13 +146,7 @@ class UrlJomField(JomField):
                 return ""
         except ValueError:
             return ""
-    
-    def setValue(self, value):
-        filefield = getattr(self.instance, self.name)
-        filefield.name = value
-        
-    value = property(getValue, setValue)
-        
+                
     def toString(self):
         return self.getValue()
     
@@ -203,27 +191,6 @@ class ForeignKeyJomField(JomField):
             return getattr(self.instance, self.name)
         except self.related.DoesNotExist:
             return None
-    
-    def setValue(self, value):
-        if value == None:
-            setattr(self.instance, self.name, None)
-        elif isinstance(value, int):
-            setattr(self.instance, self.name,
-                    self.related.objects.get(id = value))
-        elif isinstance(value, (str, unicode)):
-            setattr(self.instance, self.name,
-                    self.related.objects.get(id = int(value)))
-        elif isinstance(value, Model):
-            setattr(self.instance, self.name, value)
-        elif isinstance(value, dict):
-            jomInstance = self.factory.update(value)
-            setattr(self.instance, self.name, jomInstance.instance)
-        else:
-            raise AttributeError(
-                    "%s (%s), should be a instance of Model or a dict."
-                    % (value, type(value)))
-            
-    value = property(getValue, setValue)
     
     def toString(self):
         return self.value.__srt__()
