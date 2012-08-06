@@ -32,7 +32,6 @@ def jom_async_update_ajax(request):
     form = descriptor.update_form(
             request.POST, request.FILES, instance = instance)
     if form.is_valid():
-        form.save()
         instance = form.save()
         jomInstance = factory.getJomInstance(instance)
         return True, {'config': jomInstance.instanceToDict()}, ""
@@ -61,7 +60,6 @@ def jom_async_create_ajax(request):
     if form.is_valid():
         instance = form.save()
         jomInstance = factory.getJomInstance(instance)
-        jomInstance.update(values)
         return True, {'config': jomInstance.instanceToDict()}, ""
     else:
         return False, form._errors, form.non_field_errors()
@@ -112,5 +110,4 @@ def jom_async_get_ajax(request):
             id = values.get("id"))
     
     jomInstance = factory.getJomInstance(instance)
-    jomInstance.update(values)
     return True, {'config': jomInstance.instanceToDict()}, ""
