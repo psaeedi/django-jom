@@ -319,16 +319,8 @@ class JomInstance(JomEntry):
     
     def instanceToDict(self):
         dictionary = {}
-        """
-        for field_name in self.descriptor.jom_fields.keys():
-            value = getattr(self.instance, field_name)
-            if isinstance(value, Model):
-                value = value.pk
-            # TODO(msama): handle m2m
-            dictionary[field_name] = value
-        """
         for name, field in self.jom_fields.items():
-            dictionary[name] = field.getValue()
+            dictionary[name] = field.toJavascript()
         return dictionary
 
     def toJavascript(self):
