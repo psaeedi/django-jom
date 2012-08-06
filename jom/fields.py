@@ -193,10 +193,10 @@ class ForeignKeyJomField(JomField):
             return None
     
     def toString(self):
-        return self.value.__srt__()
+        return self.getValue().__srt__()
     
     def toJavascript(self):
-        return self.value.id
+        return self.getValue().id
 
     @classmethod
     def renderField(self, clazz, name, fk_clazz, readonly = False):

@@ -29,7 +29,8 @@ def jom_async_update_ajax(request):
     
     #jomInstance = factory.getJomInstance(instance)
     #jomInstance.update(values)
-    form = descriptor.update_form(request.POST, instance = instance)
+    form = descriptor.update_form(
+            request.POST, request.FILES, instance = instance)
     if form.is_valid():
         form.save()
         instance = form.save()
@@ -57,7 +58,7 @@ def jom_async_create_ajax(request):
                 "Permission denied for user %s." %
                 request.user)
         
-    form = descriptor.create_form(request.POST)
+    form = descriptor.create_form(request.POST, request.FILES)
     if form.is_valid():
         instance = form.save()
         jomInstance = factory.getJomInstance(instance)
