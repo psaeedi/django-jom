@@ -102,6 +102,7 @@
 
 {{ clazz }}.prototype.asyncUpdateSubmit = function(
 		$form, successCallback, errorCallback) {
+	var self = this;
 	
 	var options = {
 		data: {model: {{ clazz|capital }}_MODEL},
@@ -126,7 +127,7 @@
 	};
 	$form.ajaxForm(options);
 	$form.submit(function(event) {
-		$(this).ajaxSubmit(); 
+		$form.ajaxSubmit(); 
 		return false;
 	});	
 };
@@ -282,7 +283,7 @@
 	};
 	$form.ajaxForm(options);
 	$form.submit(function(event) {
-		$(this).ajaxSubmit(); 
+		$form.ajaxSubmit(); 
 		return false;
 	});	
 };
