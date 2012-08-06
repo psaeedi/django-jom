@@ -231,7 +231,7 @@
 		$form, successCallback, errorCallback) {
 	
 	var options = {
-		data: {model: {{ clazz|capital }}_MODEL}
+		data: {model: {{ clazz|capital }}_MODEL},
 		url: {{ clazz|capital }}_ASYNC_CREATE_URL,
 		data: config,
 		dataType: 'json',
