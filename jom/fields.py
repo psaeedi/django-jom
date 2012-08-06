@@ -59,10 +59,10 @@ class BooleanJomField(JomField):
         super(BooleanJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        return "true" if self.value else "false"
+        return "true" if self.getValue() else "false"
   
         
 class NumeralJomField(JomField):
@@ -78,11 +78,11 @@ class NumeralJomField(JomField):
         super(NumeralJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
         # marked safe to avoid comma separators
-        return safe(self.value)
+        return safe(self.getValue())
 
 
 class StringJomField(JomField):
@@ -99,11 +99,11 @@ class StringJomField(JomField):
         super(StringJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
         # TODO(msama): handle tabs and new lines
-        value = self.value if self.value else ""
+        value = self.getValue() if self.getValue() else ""
         return safe("\"%s\"" % value.replace("\"", "\\\""))
     
 
@@ -168,10 +168,10 @@ class DateJomField(JomField):
         super(DateJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        return self.value
+        return self.getValue()
     
 
 class ForeignKeyJomField(JomField):
