@@ -32,8 +32,8 @@ def jom_async_update_ajax(request):
     form = descriptor.update_form(
             request.POST, request.FILES, instance = instance)
     if form.is_valid():
-        instance = form.save()
-        jomInstance = factory.getJomInstance(instance)
+        updated_instance = form.save()
+        jomInstance = factory.getJomInstance(updated_instance)
         return True, {'config': jomInstance.instanceToDict()}, ""
     else:
         return False, form._errors, form.non_field_errors()
