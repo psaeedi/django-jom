@@ -73,7 +73,7 @@
 /**
  * Save the instance and all the loaded FK on the server.
  * 
- * @callback successCallback()
+ * @callback successCallback(jomInstance)
  * @callback errorCallback(jsonResponse)
  */
 {{ clazz }}.prototype.asyncUpdate = function(successCallback, errorCallback) {
@@ -89,7 +89,7 @@
     			// Update the current instance
     			// with the returned values.
     			self.init(jsonResponse)
-    			successCallback();
+    			successCallback(self);
     		} else {
     			errorCallback(jsonResponse);
     		}
@@ -100,6 +100,12 @@
 	});
 };
 
+/**
+ * Save the instance using a Form.
+ * 
+ * @callback successCallback(jomInstance)
+ * @callback errorCallback(jsonResponse)
+ */
 {{ clazz }}.prototype.asyncUpdateSubmit = function(
 		$form, successCallback, errorCallback) {
 	var self = this;
@@ -116,7 +122,7 @@
     			// Update the current instance
     			// with the returned values.
     			self.init(jsonResponse)
-    			successCallback(jsonResponse);
+    			successCallback(self);
     		} else {
     			errorCallback(jsonResponse);
     		}

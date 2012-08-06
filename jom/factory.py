@@ -320,7 +320,7 @@ class JomInstance(JomEntry):
     def instanceToDict(self):
         dictionary = {}
         for name, field in self.jom_fields.items():
-            dictionary[name] = field.toJavascript()
+            dictionary[name] = field.toString()
         return dictionary
 
     def toJavascript(self):

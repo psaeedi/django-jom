@@ -194,7 +194,7 @@ class ForeignKeyJomField(JomField):
     
     def toString(self):
         value = self.getValue()
-        return value.__srt__() if value else "null"
+        return value.id if value else "null"
     
     def toJavascript(self):
         value = self.getValue()
