@@ -113,7 +113,6 @@
 	var options = {
 		data: {model: {{ clazz|capital }}_MODEL},
 		url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
-    	data: this.toMap(),
     	dataType: 'json',
     	type: 'POST',
     	//traditional: true,
