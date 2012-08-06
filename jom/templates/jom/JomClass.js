@@ -227,6 +227,34 @@
 	});
 };
 
+{{ clazz }}Factory.prototype.asynchSubmit = function(
+		$form, successCallback, errorCallback) {
+	
+	var options = {
+		data: {model: {{ clazz|capital }}_MODEL}
+		url: {{ clazz|capital }}_ASYNC_CREATE_URL,
+		data: config,
+		dataType: 'json',
+		type: 'POST',
+		traditional: true,
+		success: function(jsonResponse) { 
+			if (jsonResponse.result == true) {
+				var jomInstace = new {{ clazz }}(jsonResponse.config);
+				successCallback(jomInstace);
+			} else {
+				errorCallback(jsonResponse);
+			}
+		},
+		error: function() { 
+			errorCallback("The server was unreachable.");
+		} 
+	};
+	$form.submit(function(event) {
+		$form.ajaxForm(options);
+		return false;
+	});	
+};
+
 {% block factory_extra_def %}{% endblock %}
 var singleton{{ clazz }}Factory = new {{ clazz }}Factory();
 {% endblock %}
