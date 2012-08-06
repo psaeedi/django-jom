@@ -119,6 +119,7 @@
     	traditional: true,
     	success: function(jsonResponse, statusText, xhr, $form) { 
     		if (jsonResponse.result == true) {
+    			console.log(jsonResponse);
     			// Update the current instance
     			// with the returned values.
     			self.init(jsonResponse)
