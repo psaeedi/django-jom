@@ -132,9 +132,9 @@
     		errorCallback("The server was unreachable.");
     	}
 	};
-	$form.ajaxForm(options);
+
 	$form.submit(function(event) {
-		$form.ajaxSubmit(); 
+		$form.ajaxSubmit(options); 
 		return false;
 	});	
 };
@@ -288,9 +288,9 @@
 			errorCallback("The server was unreachable.");
 		} 
 	};
-	$form.ajaxForm(options);
+
 	$form.submit(function(event) {
-		$form.ajaxSubmit(); 
+		$form.ajaxSubmit(options); 
 		return false;
 	});	
 };
