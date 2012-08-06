@@ -100,6 +100,37 @@
 	});
 };
 
+{{ clazz }}.prototype.asyncUpdateSubmit = function(
+		$form, successCallback, errorCallback) {
+	
+	var options = {
+		data: {model: {{ clazz|capital }}_MODEL},
+		url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
+    	data: this.toMap(),
+    	dataType: 'json',
+    	type: 'POST',
+    	traditional: true,
+    	success: function(jsonResponse) { 
+    		if (jsonResponse.result == true) {
+    			// Update the current instance
+    			// with the returned values.
+    			self.init(jsonResponse)
+    			successCallback();
+    		} else {
+    			errorCallback(jsonResponse);
+    		}
+    	},
+    	error: function() { 
+    		errorCallback("The server was unreachable.");
+    	}
+	};
+	$form.ajaxForm(options);
+	$form.submit(function(event) {
+		$(this).ajaxSubmit(); 
+		return false;
+	});	
+};
+
 /**
  * Delete the instance on the server.
  * 
@@ -227,7 +258,7 @@
 	});
 };
 
-{{ clazz }}Factory.prototype.asyncSubmit = function(
+{{ clazz }}Factory.prototype.asyncCreateSubmit = function(
 		$form, successCallback, errorCallback) {
 	
 	var options = {
