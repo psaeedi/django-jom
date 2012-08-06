@@ -1,3 +1,2 @@
 django
-#-e git://github.com/msama/django-jom.git#egg=django-puzzledev-jom
--e ../
+-e git://github.com/msama/django-jom.git#egg=django-puzzledev-jom

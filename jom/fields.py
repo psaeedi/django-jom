@@ -120,7 +120,7 @@ class JavascriptJomField(JomField):
     def __init__(self, instance, name, readonly = False,
             factory = jom_factory.JomFactory.default()):
         value = getattr(instance, name)
-        if not isinstance(value, (str, unicode)):
+        if not isinstance(value, (str, unicode, NoneType)):
             raise AssertionError(
                 "Value should be a string. Found: %s." % value)
         super(JavascriptJomField, self).__init__(instance, name, readonly, factory)

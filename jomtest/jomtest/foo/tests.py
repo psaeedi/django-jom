@@ -3,16 +3,18 @@ Created on Jul 30, 2012
 
 @author: Michele Sama (m.sama@puzzledev.com)
 '''
-from django.test.testcases import TestCase
 from django.core.management import call_command
+from django.core.urlresolvers import reverse
+from django.test.testcases import TestCase
+
 from jom.factory import JomFactory
+from jom.fields import StringJomField, NumeralJomField, BooleanJomField,\
+    DateJomField, UrlJomField
+
 from jomtest.foo.models import SimpleModel
 from jomtest.foo.joms import SimpleModelJomDescriptor,\
     ModelWithAllFieldsJomDescriptor
-from jom.fields import StringJomField, NumeralJomField, BooleanJomField,\
-    DateJomField, UrlJomField
-from django.core.urlresolvers import reverse
-import json
+
 
 
 class ExportTestCase(TestCase):
@@ -101,11 +103,19 @@ class JomDescriptorTestCase(TestCase):
     
 class BackEndTestCase(TestCase):
     
+    def setUp(self):
+        self.factory = JomFactory.default()
+        self.descriptor = self.factory.register(
+                SimpleModelJomDescriptor)
+        
+    def tearDown(self):
+        TestCase.tearDown(self)
     
-    def testSave(self):
+    def testUpdate(self):
         instance = SimpleModel.objects.create(name = "foo")
+        print instance.__class__.__name__
         response = self.client.post(
-                reverse("jom_async_save_ajax"),
+                reverse("jom_async_update_ajax"),
                 data = {'model': instance.__class__.__name__,
                  'id': instance.id,
                  'name': "bar"}, 
