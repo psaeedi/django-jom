@@ -341,11 +341,4 @@ class JomInstance(JomEntry):
                      "'{{ key }}': {{ fieldInstance.toJavascript }}{% if not forloop.last %},{% endif %}{% endfor %}}")
         c = Context(dictionary)
         return t.render(c)
-    
-    def update(self, dictValues):
-        for name, jom_field in self.jom_fields.items():
-            if not jom_field.readonly:
-                if dictValues.has_key(name):
-                    jom_field.setValue(dictValues[name])
-        self.instance.save()
         
