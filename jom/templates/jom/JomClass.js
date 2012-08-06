@@ -107,11 +107,11 @@
  * @callback errorCallback(jsonResponse)
  */
 {{ clazz }}.prototype.asyncUpdateSubmit = function(
-		$form, successCallback, errorCallback) {
+		$form, jomInstance, successCallback, errorCallback) {
 	var self = this;
 	
 	var options = {
-		data: {model: {{ clazz|capital }}_MODEL},
+		data: {model: {{ clazz|capital }}_MODEL, id: jomInstance.getId()},
 		url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
     	dataType: 'json',
     	type: 'POST',
