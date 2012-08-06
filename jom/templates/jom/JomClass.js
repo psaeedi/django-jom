@@ -166,7 +166,7 @@
  * @callback successCallback(jomInstance)
  * @callback errorCallback(message)
  */
-{{ clazz }}Factory.prototype.asynchGet = function(instanceId, successCallback, errorCallback) {
+{{ clazz }}Factory.prototype.asyncGet = function(instanceId, successCallback, errorCallback) {
 	var jom =  this.joms[instanceId];
 	if (jom == undefined) {
 		// TODO(msama): not implemented yet.
@@ -202,7 +202,7 @@
  * @callback successCallback(jomInstance)
  * @callback errorCallback(message)
  */
-{{ clazz }}Factory.prototype.asynchCreate = function(
+{{ clazz }}Factory.prototype.asyncCreate = function(
 		config, successCallback, errorCallback) {
 	
 	config['model'] = {{ clazz|capital }}_MODEL;
@@ -227,7 +227,7 @@
 	});
 };
 
-{{ clazz }}Factory.prototype.asynchSubmit = function(
+{{ clazz }}Factory.prototype.asyncSubmit = function(
 		$form, successCallback, errorCallback) {
 	
 	var options = {
@@ -249,8 +249,9 @@
 			errorCallback("The server was unreachable.");
 		} 
 	};
+	$form.ajaxForm(options);
 	$form.submit(function(event) {
-		$form.ajaxForm(options);
+		$(this).ajaxSubmit(); 
 		return false;
 	});	
 };
