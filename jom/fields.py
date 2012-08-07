@@ -83,6 +83,17 @@ class NumeralJomField(JomField):
     def toJavascript(self):
         # marked safe to avoid comma separators
         return safe(self.getValue())
+    
+    @classmethod
+    def renderField(self, clazz, name, readonly = False):
+        dictionary = {
+                'clazz': clazz,
+                'name': name,
+                'readonly': readonly
+                }
+        
+        return render_to_string(
+                'jom/NumeralJomField.js', dictionary = dictionary)
 
 
 class StringJomField(JomField):
@@ -124,9 +135,9 @@ class JavascriptJomField(JomField):
     
     def toJavascript(self):
         if self.getValue():
-            return self.getValue()
+            return safe(self.getValue())
         else:
-            return "{}"
+            return safe("null")
     
 
 class UrlJomField(JomField):
