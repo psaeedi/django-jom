@@ -36,6 +36,11 @@
 	this.init(config);
 };
 
+{% block jom_def_accessor %}
+{% for name, fieldJs in fields.items %}{{ fieldJs }}
+{% endfor %}{% endblock %}{% block jom_def_extra %}{% endblock %}
+{% endblock %}
+
 {% block backend %}/**
  * Export to a data map.
  */
@@ -101,17 +106,18 @@
 };
 
 /**
- * Save the instance using a Form.
+ * Save the instance using a JQuery form.
  * 
+ * @param $form a JQuery node wrapping a form.
  * @callback successCallback(jomInstance)
  * @callback errorCallback(jsonResponse)
  */
 {{ clazz }}.prototype.asyncUpdateSubmit = function(
-		$form, jomInstance, successCallback, errorCallback) {
+		$form, successCallback, errorCallback) {
 	var self = this;
 	
 	var options = {
-		data: {model: {{ clazz|capital }}_MODEL, id: jomInstance.getId()},
+		data: {model: {{ clazz|capital }}_MODEL, id: self.getId()},
 		url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
     	dataType: 'json',
     	type: 'POST',
@@ -121,7 +127,8 @@
     			console.log(jsonResponse);
     			// Update the current instance
     			// with the returned values.
-    			self.init(jsonResponse)
+    			self.init(jsonResponse);
+    			self.updateFormFields($form);
     			successCallback(self);
     		} else {
     			errorCallback(jsonResponse);
@@ -169,10 +176,19 @@
 };
 {% endblock %}
 
-{% block jom_deg_accessor %}
-{% for name, fieldJs in fields.items %}{{ fieldJs }}
-{% endfor %}{% endblock %}{% block jom_def_extra %}{% endblock %}
+{% block form_integration %}{# depends on JQuery #}/**
+ * Update a form filling its field with the jom values.
+ * 
+ * @param $form a JQuery node wrapping a form.
+ */
+{{ clazz }}.prototype.updateFormFields = function($form) {
+	{% for name in fields.keys %}
+		var $field = $form.find("#id_" + name);
+		$field.val(this.fields[name]);
+	{% endfor %}
+};
 {% endblock %}
+
 
 {% block factory_def %}/**
 * Define a {{ clazz }}Factory singleton factory class.
@@ -265,6 +281,14 @@
 	});
 };
 
+/**
+ * Asynchronously creates a neew JomImnstance using its
+ * descriptor ModelForm.
+ * 
+ * @param $form a JQuery node wrapping a form.
+ * @callback successCallback(jomInstance)
+ * @callback errorCallback(jsonResponse)
+ */
 {{ clazz }}Factory.prototype.asyncCreateSubmit = function(
 		$form, successCallback, errorCallback) {
 	
@@ -278,6 +302,7 @@
 		success: function(jsonResponse) { 
 			if (jsonResponse.result == true) {
 				var jomInstace = new {{ clazz }}(jsonResponse.config);
+				jomInstace.updateFormFields($form);
 				successCallback(jomInstace);
 			} else {
 				errorCallback(jsonResponse);
