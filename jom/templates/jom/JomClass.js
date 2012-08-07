@@ -198,8 +198,8 @@
  */
 {{ clazz }}.prototype.updateFormFields = function($form) {
 	{% for name in fields.keys %}
-		var $field = $form.find("#id_" + name);
-		$field.val(this.fields[name]);
+		var $field = $form.find("#id_{{ name }}");
+		$field.val(this.fields["{{ name }}"]);
 	{% endfor %}
 };
 {% endblock %}
