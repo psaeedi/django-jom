@@ -142,7 +142,7 @@
     			console.log(jsonResponse);
     			// Update the current instance
     			// with the returned values.
-    			self.init(jsonResponse);
+    			self.init(jsonResponse.config);
     			self.updateFormFields($form);
     			successCallback(self);
     		} else {
