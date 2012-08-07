@@ -155,7 +155,11 @@
 	};
 
 	$form.submit(function(event) {
-		$form.ajaxSubmit(options); 
+		try {
+			$form.ajaxSubmit(options); 			
+		} catch(ex) {
+			console.err(ex);
+		}
 		return false;
 	});	
 };
@@ -329,7 +333,11 @@
 	};
 
 	$form.submit(function(event) {
-		$form.ajaxSubmit(options); 
+		try {
+			$form.ajaxSubmit(options); 			
+		} catch(ex) {
+			console.err(ex);
+		}
 		return false;
 	});	
 };
