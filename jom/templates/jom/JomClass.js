@@ -76,6 +76,21 @@
 };
 
 /**
+ * Update map
+ * 
+ * @param map the map to update
+ * @return the updated map
+ */
+{{ clazz }}.prototype.updateMap = function(map) {
+	map['model'] = {{ clazz|capital }}_MODEL;
+	for (var key in this.fields) {
+		map[key] = this.fields[key];
+	}
+	
+	return map;
+};
+
+/**
  * Save the instance and all the loaded FK on the server.
  * 
  * @callback successCallback(jomInstance)
