@@ -7,7 +7,6 @@ import datetime
 from types import NoneType
 
 from django.template.defaultfilters import safe
-from django.db.models.base import Model
 from django.template.loader import render_to_string
 
 from jom import factory as jom_factory
@@ -26,11 +25,6 @@ class JomField(object):
 
     def getValue(self):
         return getattr(self.instance, self.name)
-    
-    def setValue(self, value):
-        setattr(self.instance, self.name, value)
-        
-    value = property(getValue, setValue)
 
     def toString(self):
         raise AssertionError(
@@ -65,10 +59,10 @@ class BooleanJomField(JomField):
         super(BooleanJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        return "true" if self.value else "false"
+        return "true" if self.getValue() else "false"
   
         
 class NumeralJomField(JomField):
@@ -84,11 +78,22 @@ class NumeralJomField(JomField):
         super(NumeralJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
         # marked safe to avoid comma separators
-        return safe(self.value)
+        return safe(self.getValue())
+    
+    @classmethod
+    def renderField(self, clazz, name, readonly = False):
+        dictionary = {
+                'clazz': clazz,
+                'name': name,
+                'readonly': readonly
+                }
+        
+        return render_to_string(
+                'jom/NumeralJomField.js', dictionary = dictionary)
 
 
 class StringJomField(JomField):
@@ -105,11 +110,11 @@ class StringJomField(JomField):
         super(StringJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
         # TODO(msama): handle tabs and new lines
-        value = self.value if self.value else ""
+        value = self.getValue() if self.getValue() else ""
         return safe("\"%s\"" % value.replace("\"", "\\\""))
     
 
@@ -126,13 +131,13 @@ class JavascriptJomField(JomField):
         super(JavascriptJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        if self.value:
-            return self.value
+        if self.getValue():
+            return safe(self.getValue())
         else:
-            return "{}"
+            return safe("null")
     
 
 class UrlJomField(JomField):
@@ -152,13 +157,7 @@ class UrlJomField(JomField):
                 return ""
         except ValueError:
             return ""
-    
-    def setValue(self, value):
-        filefield = getattr(self.instance, self.name)
-        filefield.name = value
-        
-    value = property(getValue, setValue)
-        
+                
     def toString(self):
         return self.getValue()
     
@@ -180,10 +179,10 @@ class DateJomField(JomField):
         super(DateJomField, self).__init__(instance, name, readonly, factory)
         
     def toString(self):
-        return self.value
+        return self.getValue()
     
     def toJavascript(self):
-        return self.value
+        return self.getValue()
     
 
 class ForeignKeyJomField(JomField):
@@ -204,32 +203,13 @@ class ForeignKeyJomField(JomField):
         except self.related.DoesNotExist:
             return None
     
-    def setValue(self, value):
-        if value == None:
-            setattr(self.instance, self.name, None)
-        elif isinstance(value, int):
-            setattr(self.instance, self.name,
-                    self.related.objects.get(id = value))
-        elif isinstance(value, (str, unicode)):
-            setattr(self.instance, self.name,
-                    self.related.objects.get(id = int(value)))
-        elif isinstance(value, Model):
-            setattr(self.instance, self.name, value)
-        elif isinstance(value, dict):
-            jomInstance = self.factory.update(value)
-            setattr(self.instance, self.name, jomInstance.instance)
-        else:
-            raise AttributeError(
-                    "%s (%s), should be a instance of Model or a dict."
-                    % (value, type(value)))
-            
-    value = property(getValue, setValue)
-    
     def toString(self):
-        return self.value.__srt__()
+        value = self.getValue()
+        return value.id if value else "null"
     
     def toJavascript(self):
-        return self.value.id
+        value = self.getValue()
+        return value.id if value else "null"
 
     @classmethod
     def renderField(self, clazz, name, fk_clazz, readonly = False):

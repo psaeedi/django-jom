@@ -36,6 +36,11 @@
 	this.init(config);
 };
 
+{% block jom_def_accessor %}
+{% for name, fieldJs in fields.items %}{{ fieldJs }}
+{% endfor %}{% endblock %}{% block jom_def_extra %}{% endblock %}
+{% endblock %}
+
 {% block backend %}/**
  * Export to a data map.
  */
@@ -71,9 +76,24 @@
 };
 
 /**
+ * Update map
+ * 
+ * @param map the map to update
+ * @return the updated map
+ */
+{{ clazz }}.prototype.updateMap = function(map) {
+	map['model'] = {{ clazz|capital }}_MODEL;
+	for (var key in this.fields) {
+		map[key] = this.fields[key];
+	}
+	
+	return map;
+};
+
+/**
  * Save the instance and all the loaded FK on the server.
  * 
- * @callback successCallback()
+ * @callback successCallback(jomInstance)
  * @callback errorCallback(jsonResponse)
  */
 {{ clazz }}.prototype.asyncUpdate = function(successCallback, errorCallback) {
@@ -88,8 +108,8 @@
     		if (jsonResponse.result == true) {
     			// Update the current instance
     			// with the returned values.
-    			self.init(jsonResponse)
-    			successCallback();
+    			self.init(jsonResponse.config);
+    			successCallback(self);
     		} else {
     			errorCallback(jsonResponse);
     		}
@@ -98,6 +118,50 @@
     		errorCallback("The server was unreachable.");
     	}
 	});
+};
+
+/**
+ * Save the instance using a JQuery form.
+ * 
+ * @param $form a JQuery node wrapping a form.
+ * @callback successCallback(jomInstance)
+ * @callback errorCallback(jsonResponse)
+ */
+{{ clazz }}.prototype.asyncUpdateSubmit = function(
+		$form, successCallback, errorCallback) {
+	var self = this;
+	
+	var options = {
+		data: {model: {{ clazz|capital }}_MODEL, id: self.getId()},
+		url: {{ clazz|capital }}_ASYNC_UPDATE_URL,
+    	dataType: 'json',
+    	type: 'POST',
+    	traditional: true,
+    	success: function(jsonResponse, statusText, xhr, $form) { 
+    		if (jsonResponse.result == true) {
+    			console.log(jsonResponse);
+    			// Update the current instance
+    			// with the returned values.
+    			self.init(jsonResponse.config);
+    			self.updateFormFields($form);
+    			successCallback(self);
+    		} else {
+    			errorCallback(jsonResponse);
+    		}
+    	},
+    	error: function() { 
+    		errorCallback("The server was unreachable.");
+    	}
+	};
+
+	$form.submit(function(event) {
+		try {
+			$form.ajaxSubmit(options); 			
+		} catch(ex) {
+			console.err(ex);
+		}
+		return false;
+	});	
 };
 
 /**
@@ -131,10 +195,19 @@
 };
 {% endblock %}
 
-{% block jom_deg_accessor %}
-{% for name, fieldJs in fields.items %}{{ fieldJs }}
-{% endfor %}{% endblock %}{% block jom_def_extra %}{% endblock %}
+{% block form_integration %}{# depends on JQuery #}/**
+ * Update a form filling its field with the jom values.
+ * 
+ * @param $form a JQuery node wrapping a form.
+ */
+{{ clazz }}.prototype.updateFormFields = function($form) {
+	{% for name in fields.keys %}
+		var $field = $form.find("#id_{{ name }}");
+		$field.val(this.fields["{{ name }}"]);
+	{% endfor %}
+};
 {% endblock %}
+
 
 {% block factory_def %}/**
 * Define a {{ clazz }}Factory singleton factory class.
@@ -166,7 +239,7 @@
  * @callback successCallback(jomInstance)
  * @callback errorCallback(message)
  */
-{{ clazz }}Factory.prototype.asynchGet = function(instanceId, successCallback, errorCallback) {
+{{ clazz }}Factory.prototype.asyncGet = function(instanceId, successCallback, errorCallback) {
 	var jom =  this.joms[instanceId];
 	if (jom == undefined) {
 		// TODO(msama): not implemented yet.
@@ -202,7 +275,7 @@
  * @callback successCallback(jomInstance)
  * @callback errorCallback(message)
  */
-{{ clazz }}Factory.prototype.asynchCreate = function(
+{{ clazz }}Factory.prototype.asyncCreate = function(
 		config, successCallback, errorCallback) {
 	
 	config['model'] = {{ clazz|capital }}_MODEL;
@@ -213,7 +286,7 @@
     	dataType: 'json',
     	type: 'POST',
     	traditional: true,
-    	success: function(jsonResponse) { 
+    	success: function(jsonResponse, statusText, xhr, $form) { 
     		if (jsonResponse.result == true) {
     			var jomInstace = new {{ clazz }}(jsonResponse.config);
     			successCallback(jomInstace);
@@ -225,6 +298,48 @@
     		errorCallback("The server was unreachable.");
     	}
 	});
+};
+
+/**
+ * Asynchronously creates a neew JomImnstance using its
+ * descriptor ModelForm.
+ * 
+ * @param $form a JQuery node wrapping a form.
+ * @callback successCallback(jomInstance)
+ * @callback errorCallback(jsonResponse)
+ */
+{{ clazz }}Factory.prototype.asyncCreateSubmit = function(
+		$form, successCallback, errorCallback) {
+	
+	var options = {
+		data: {model: {{ clazz|capital }}_MODEL},
+		url: {{ clazz|capital }}_ASYNC_CREATE_URL,
+		data: config,
+		dataType: 'json',
+		type: 'POST',
+		traditional: true,
+		success: function(jsonResponse) { 
+			if (jsonResponse.result == true) {
+				var jomInstace = new {{ clazz }}(jsonResponse.config);
+				jomInstace.updateFormFields($form);
+				successCallback(jomInstace);
+			} else {
+				errorCallback(jsonResponse);
+			}
+		},
+		error: function() { 
+			errorCallback("The server was unreachable.");
+		} 
+	};
+
+	$form.submit(function(event) {
+		try {
+			$form.ajaxSubmit(options); 			
+		} catch(ex) {
+			console.err(ex);
+		}
+		return false;
+	});	
 };
 
 {% block factory_extra_def %}{% endblock %}

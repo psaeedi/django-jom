@@ -12,6 +12,18 @@ jomFactory = JomFactory.default()
 class SimpleModelJomDescriptor(JomDescriptor):
     model = SimpleModel
     
+    def canUpdate(self, request):
+        return True
+    
+    def canCreate(self, request):
+        return True
+    
+    def canGet(self, request):
+        return True
+    
+    def canDelete(self, request):
+        return True
+    
 jomFactory.register(SimpleModelJomDescriptor)
 
 
