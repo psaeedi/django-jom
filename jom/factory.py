@@ -319,13 +319,8 @@ class JomInstance(JomEntry):
     
     def instanceToDict(self):
         dictionary = {}
-        for field_name in self.descriptor.jom_fields.keys():
-            value = getattr(self.instance, field_name)
-            if isinstance(value, Model):
-                value = value.pk
-            # TODO(msama): handle m2m
-            dictionary[field_name] = value
-        
+        for name, field in self.jom_fields.items():
+            dictionary[name] = field.toString()
         return dictionary
 
     def toJavascript(self):
@@ -338,11 +333,4 @@ class JomInstance(JomEntry):
                      "'{{ key }}': {{ fieldInstance.toJavascript }}{% if not forloop.last %},{% endif %}{% endfor %}}")
         c = Context(dictionary)
         return t.render(c)
-    
-    def update(self, dictValues):
-        for name, jom_field in self.jom_fields.items():
-            if not jom_field.readonly:
-                if dictValues.has_key(name):
-                    jom_field.setValue(dictValues[name])
-        self.instance.save()
         
