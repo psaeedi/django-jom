@@ -28,8 +28,13 @@ test("Constructor works", function() {
 
 test("Public fields have Getters and Setters", function() {
 	var instance = createInstance(config);
+<<<<<<< HEAD
+	ok(instance ['getName'] != undefined, "no getter");
+        ok(instance ['setName'] != undefined, "no setter");
+=======
 	ok(instance ['getName'] != undefined, "it has no getter");
         ok(instance ['setName'] != undefined, "it has no setter");
+>>>>>>> e0623014ea48fbf7b119af805228591da9a269c9
 });
 
 test("Readonly fields have no setter", function() {
